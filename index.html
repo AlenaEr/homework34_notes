@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нотатник</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: lightgray;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid lightgrey;
+            border-radius: 5px;
+            background-color: lightgray;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+        }
+
+        .note-list {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .note-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .note-buttons {
+            margin-top: 5px;
+            text-align: right;
+        }
+        
+        button {
+            padding: 5px 10px;
+            margin: 5px;
+            cursor: pointer;
+            text-align: right;
+        }
+        
+        #noteInput {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Нотатник</h1>
+        <input type="text" id="noteInput" placeholder="введіть ваш запис">
+        <button onclick="addNote()">Додати запис</button>
+        <ul id="noteList" class="note-list"></ul>
+    </div>
+
+    <script>
+        function addNote() {
+            let noteInput = document.getElementById("noteInput")
+            let noteText = noteInput.value.trim();
+            if (noteText !== "") {
+                const noteList = document.getElementById("noteList");
+                const li = document.createElement("li");
+                li.className = "note-item";
+                li.textContent = noteText;
+                li.setAttribute("data-type", "note");
+                createButtons(li);
+                noteList.appendChild(li);
+                saveNotes();
+                noteInput.value = "";
+            } else {
+                alert("Введіть текст замітки!");
+            }
+        }
+
+        function editNote(li) {
+            const newText = prompt("Редагувати:", li.textContent);
+            if (newText != null) {
+                li.textContent = newText.trim();
+                li.setAttribute("data-type", "note");
+                createButtons(li);
+                saveNotes();
+            }
+        }
+
+        function deleteNote(li) {
+            const noteList = document.getElementById("noteList");
+            noteList.removeChild(li);
+            saveNotes();
+        }
+
+
+        function saveNotes() {
+            const noteList = [];
+            const noteItems = document.querySelectorAll(".note-item");
+            noteItems.forEach(function (item) {
+                const noteText = item.textContent.replace("Редагувати", "").replace("Видалити", "").trim();
+                noteList.push(noteText)
+            });
+            localStorage.setItem("notes", JSON.stringify(noteList));
+        }
+
+        function loadNotes() {
+            const noteList = localStorage.getItem("notes");
+            if (noteList !== null) {
+                noteList = JSON.parse(noteList);
+                const noteListElement = document.getElementById("noteList");
+                noteList.forEach(function (noteText) {
+                    const li = document.createElement("li");
+                    li.className = "note-item";
+                    li.textContent = noteText;
+                    createButtons();
+                    noteListElement.appendChild(li);
+                });
+            }
+        }
+
+        function createButtons(li) {
+            const editButton = document.createElement("button");
+            editButton.textContent = "Редагувати";
+            editButton.onclick = function () { editNote(li); };
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "Видалити";
+            deleteButton.onclick = function () { deleteNote(li); };
+            const div = document.createElement("div");
+            div.className = "note-buttons";
+            div.appendChild(editButton);
+            div.appendChild(deleteButton);
+            li.appendChild(div);
+
+        }
+
+        window.onload = loadNotes;
+    </script>
+</body>
+
+</html>
