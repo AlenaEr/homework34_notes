@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Нотатник</title>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -45,15 +43,21 @@
             margin-top: 5px;
             text-align: right;
         }
-        
+
         button {
             padding: 5px 10px;
             margin: 5px;
             cursor: pointer;
             text-align: right;
         }
-        
+
         #noteInput {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .input-field {
             width: 100%;
             padding: 10px;
             box-sizing: border-box;
@@ -89,13 +93,23 @@
         }
 
         function editNote(li) {
-            const newText = prompt("Редагувати:", li.textContent);
-            if (newText != null) {
-                li.textContent = newText.trim();
-                li.setAttribute("data-type", "note");
-                createButtons(li);
-                saveNotes();
-            }
+            let noteText = li.textContent.replace("Редагувати", "").replace("Видалити", "").trim();
+            let inputField = document.createElement("input");
+            inputField.value = noteText;
+            inputField.setAttribute("class", "input-field");
+            inputField.value = noteText;
+            li.innerHTML = '';
+            li.appendChild(inputField);
+            inputField.focus();
+            inputField.addEventListener('blur', function () {
+                let newText = inputField.value.trim();
+                if (newText !== "") {
+                    li.textContent = newText;
+                    li.setAttribute("data-type", "note");
+                    createButtons(li);
+                    saveNotes();
+                } else { deleteNote(li) }
+            });
         }
 
         function deleteNote(li) {
@@ -103,7 +117,6 @@
             noteList.removeChild(li);
             saveNotes();
         }
-
 
         function saveNotes() {
             const noteList = [];
