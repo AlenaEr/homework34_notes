@@ -116,7 +116,7 @@
         }
 
         function loadNotes() {
-            const noteList = localStorage.getItem("notes");
+            let noteList = localStorage.getItem("notes");
             if (noteList !== null) {
                 noteList = JSON.parse(noteList);
                 const noteListElement = document.getElementById("noteList");
@@ -124,7 +124,7 @@
                     const li = document.createElement("li");
                     li.className = "note-item";
                     li.textContent = noteText;
-                    createButtons();
+                    createButtons(li);
                     noteListElement.appendChild(li);
                 });
             }
